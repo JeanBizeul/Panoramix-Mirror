@@ -21,6 +21,7 @@ jobs:
         - name: running coding style checker
           run: check.sh $(pwd) $(pwd)
         - name: parsing arguments
+          shell: bash
           run: |
             file="coding-style-reports.log"
             errors=0
