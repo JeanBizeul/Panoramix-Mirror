@@ -15,12 +15,6 @@ jobs:
       runs-on: ubuntu-latest
       container: ghcr.io/epitech/coding-style-checker:latest
       steps:
-        - name: check repository adress
-          run: |
-            if [ git@github.com:${{ github.repository }}.git == ${{ env.MIRROR_URL }} ]; then
-              echo "::debug title="Already on the mirror repository."::"
-              exit 1
-            fi
         - uses: actions/checkout@v4
           with:
             fetch-depth: 1
