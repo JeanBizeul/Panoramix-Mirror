@@ -1,0 +1,7 @@
+panoramix
+
+*.o
+*.log
+
+.vscode/
+objs/
