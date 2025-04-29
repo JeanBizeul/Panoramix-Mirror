@@ -1,0 +1,87 @@
+name: Compilation & tests
+on:
+  push:
+    branches-ignore:
+      - 'ga-ignore-**'
+  pull_request:
+    branches-ignore:
+      - 'ga-ignore-**'
+env:
+  MIRROR_URL: "git@github.com:EpitechPromo2028/B-OOP-400-NAN-4-1-raytracer-jean.bizeul.git"
+  BINARY: "raytracer"
+jobs:
+  check_coding_style:
+      name: coding style
+      runs-on: ubuntu-latest
+      container: ghcr.io/epitech/coding-style-checker:latest
+      steps:
+        - name: check repository adress
+          run: |
+            if [ git@github.com:${{ github.repository }}.git == ${{ env.MIRROR_URL }} ]; then
+              echo "::debug title="Already on the mirror repository."::"
+              exit 1
+            fi
+        - uses: actions/checkout@v4
+          with:
+            fetch-depth: 1
+        - name: running coding style checker
+          run: check.sh $(pwd) $(pwd)
+        - name: parsing arguments
+          run: |
+            file="coding-style-reports.log"
+            errors=0
+            if [ -f $file ]; then
+              while IFS=":" read -r filepath line gravity code; do
+                filepath=$(cut -c 3- <<< $filepath)
+                echo "::error title="$gravity coding style error: $filepath#L$line", line=$line, file=$filepath:: $code"
+                errors=$(( $errors + 1 ))
+              done < "$file"
+              if [ $errors -gt 0 ]; then
+                exit 1
+              fi
+            fi
+  check_program_compilation:
+    name: compilation
+    needs: check_coding_style
+    runs-on: ubuntu-latest
+    container: epitechcontent/epitest-docker:latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: make
+        timeout-minutes: 2
+        run: make
+      - name: looking for executables
+        if: hashFiles(env.BINARY) == ''
+        run: |
+          echo "::error title="missing executable(s)!"::"
+          exit 1
+      - name: clean
+        run: make clean
+  run_tests:
+    name: tests
+    needs: check_program_compilation
+    runs-on: ubuntu-latest
+    container: epitechcontent/epitest-docker:latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: running tests
+        timeout-minutes: 2
+        run: make tests_run
+  push_to_mirror:
+    name: pushing
+    needs: run_tests
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    - uses: pixta-dev/repository-mirroring-action@v1
+      with:
+        target_repo_url:
+          ${{ env.MIRROR_URL }}
+        ssh_private_key:
+          ${{ secrets.GIT_SSH_PRIVATE_KEY }}
