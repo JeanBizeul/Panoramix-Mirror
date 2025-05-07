@@ -5,6 +5,7 @@
 ** panoramix
 */
 
+#include <stdlib.h>
 #include "panoramix.h"
 
 villager_t **create_villagers(unsigned int count, unsigned int nb_fights,
@@ -14,7 +15,7 @@ villager_t **create_villagers(unsigned int count, unsigned int nb_fights,
 
     if (villagers_list == NULL)
         return NULL;
-    for (int i = 0; i < count; i++) {
+    for (unsigned int i = 0; i < count; i++) {
         villagers_list[i] = malloc(sizeof(villager_t));
 
         if (villagers_list[i] == NULL) {
