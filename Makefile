@@ -18,7 +18,10 @@ LDFLAGS		=
 FILE_EXTENSION	=	.c
 INCLUDE_PATH	=	./include
 
-SRCS		=
+SRCS		=	src/shared.c	\
+				src/panoramix.c	\
+				src/villager.c	\
+			    src/druid.c
 
 MAIN		=	main.c
 
