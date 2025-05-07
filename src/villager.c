@@ -28,17 +28,16 @@ static void fight(villager_t *villager)
 
 static bool drink(villager_t *villager)
 {
-    bool ret = false;
-
     pthread_mutex_lock(&Pot_mutex);
     pthread_mutex_lock(&Refills_left_mutex);
     printf("Villager %u: I need a drink... I see %u servings left.\n",
         villager->id, villager->pot->servings);
     if (sem_trywait(&Potions_sem) == -1) {
-        ret = call_pano(villager);
-        pthread_mutex_unlock(&Refills_left_mutex);
-        pthread_mutex_unlock(&Pot_mutex);
-        return ret;
+        if (!call_pano(villager)) {
+            pthread_mutex_unlock(&Refills_left_mutex);
+            pthread_mutex_unlock(&Pot_mutex);
+            return false;
+        }
     }
     villager->pot->servings--;
     Refills_left--;
@@ -71,5 +70,8 @@ void *village_thread(void *villager_struct)
         fight(villager);
     }
     printf("Villager %u: I'm going to sleep now.\n", villager->id);
+    pthread_mutex_lock(&Villagers_done_mutex);
+    Villagers_done++;
+    pthread_mutex_unlock(&Villagers_done_mutex);
     return NULL;
 }

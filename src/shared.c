@@ -7,10 +7,12 @@
 
 #include "panoramix.h"
 
-int Refills_left;
+unsigned int Refills_left;
+unsigned int Villagers_done;
 
 pthread_mutex_t Pot_mutex;
 pthread_mutex_t Refills_left_mutex;
+pthread_mutex_t Villagers_done_mutex;
 sem_t Potions_sem;
 sem_t Call_druid_sem;
 
@@ -29,12 +31,15 @@ bool init_mutexes(void)
         return false;
     if (pthread_mutex_init(&Refills_left_mutex, NULL) != 0)
         return false;
+    if (pthread_mutex_init(&Villagers_done_mutex, NULL) != 0)
+        return false;
     return true;
 }
 
 bool init_shared(unsigned int refill_count)
 {
     Refills_left = refill_count;
+    Villagers_done = 0;
     if (!init_semaphores())
         return false;
     if (!init_mutexes())

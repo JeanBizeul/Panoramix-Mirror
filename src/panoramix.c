@@ -40,7 +40,8 @@ pot_t *create_pot(unsigned int size)
     return pot;
 }
 
-druid_t *create_druid(unsigned int nb_refills, pot_t *pot)
+druid_t *create_druid(unsigned int nb_refills, unsigned int villagers_count,
+    pot_t *pot)
 {
     druid_t *druid = malloc(sizeof(druid_t));
 
@@ -48,6 +49,7 @@ druid_t *create_druid(unsigned int nb_refills, pot_t *pot)
         return NULL;
     druid->nb_refills = nb_refills;
     druid->pot = pot;
+    druid->villager_count = villagers_count;
     if (sem_init(&druid->Druid_ready_sem, 0, 0) == -1) {
         free(druid);
         return NULL;

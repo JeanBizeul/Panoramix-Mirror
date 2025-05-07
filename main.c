@@ -11,7 +11,7 @@
 int main(void)
 {
     pot_t *pot = create_pot(3);
-    druid_t *druid = create_druid(3, pot);
+    druid_t *druid = create_druid(3, 1, pot);
     villager_t **villagers = create_villagers(1, 5, pot);
 
     if (pot == NULL || druid == NULL || villagers == NULL) {
