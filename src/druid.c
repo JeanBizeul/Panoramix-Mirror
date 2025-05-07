@@ -13,7 +13,7 @@ static void refill(druid_t *druid)
     pthread_mutex_lock(&Refills_left_mutex);
     pthread_mutex_lock(&Pot_mutex);
     Refills_left--;
-    druid->pot->servings = POT_SIZE;
+    druid->pot->servings = druid->pot->pot_size;
     printf("Druid: Ah! Yes, yes, I'm awake! Working on it!"
         " Beware I can only make %u more refills after this one.\n",
         Refills_left);

@@ -29,13 +29,14 @@ villager_t **create_villagers(unsigned int count, unsigned int nb_fights,
     return villagers_list;
 }
 
-pot_t *create_pot(void)
+pot_t *create_pot(unsigned int size)
 {
     pot_t *pot = malloc(sizeof(pot_t));
 
     if (pot == NULL)
         return NULL;
-    pot->servings = POT_SIZE;
+    pot->pot_size = size;
+    pot->servings = pot->pot_size;
     return pot;
 }
 
@@ -54,17 +55,27 @@ druid_t *create_druid(unsigned int nb_refills, pot_t *pot)
     return druid;
 }
 
+static unsigned int count_villagers(villager_t **villagers)
+{
+    unsigned int count = 0;
+
+    while (villagers[count] != NULL)
+        count++;
+    return count;
+}
+
 void launch_panoramix(villager_t **villagers, druid_t *druid)
 {
-    pthread_t villager_threads[VILLAGERS];
+    unsigned int villager_count = count_villagers(villagers);
+    pthread_t villager_threads[villager_count];
     pthread_t druid_thread_id;
 
     pthread_create(&druid_thread_id, NULL, druid_thread, druid);
     sem_wait(&druid->Druid_ready_sem);
-    for (unsigned int i = 0; i < VILLAGERS; i++)
+    for (unsigned int i = 0; i < villager_count; i++)
         pthread_create(&villager_threads[i], NULL, village_thread,
             villagers[i]);
-    for (unsigned int i = 0; i < VILLAGERS; i++)
+    for (unsigned int i = 0; i < villager_count; i++)
         pthread_join(villager_threads[i], NULL);
     pthread_join(druid_thread_id, NULL);
 }

@@ -7,7 +7,7 @@
 
 #include "panoramix.h"
 
-int Refills_left = REFILLS;
+int Refills_left;
 
 pthread_mutex_t Pot_mutex;
 pthread_mutex_t Refills_left_mutex;
@@ -32,9 +32,9 @@ bool init_mutexes(void)
     return true;
 }
 
-bool init_shared(void)
+bool init_shared(unsigned int refill_count)
 {
-    Refills_left = REFILLS;
+    Refills_left = refill_count;
     if (!init_semaphores())
         return false;
     if (!init_mutexes())

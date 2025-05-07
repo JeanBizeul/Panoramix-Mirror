@@ -11,11 +11,6 @@
     #include <semaphore.h>
     #include <stdbool.h>
 
-#define POT_SIZE 3
-#define REFILLS 3
-#define VILLAGERS 1
-#define NB_FIGHTS 5
-
 extern int Refills_left;
 
 extern pthread_mutex_t Pot_mutex;
@@ -25,6 +20,7 @@ extern sem_t Call_druid_sem;
 
 typedef struct pot_s {
     unsigned int servings;
+    unsigned int pot_size;
 } pot_t;
 
 typedef struct villager_s {
@@ -44,12 +40,12 @@ void *druid_thread(void *druid_struct);
 
 villager_t **create_villagers(unsigned int count, unsigned int nb_fights,
     pot_t *pot);
-pot_t *create_pot(void);
+pot_t *create_pot(unsigned int size);
 druid_t *create_druid(unsigned int nb_refills, pot_t *pot);
 
 bool init_semaphores(void);
 bool init_mutexes(void);
-bool init_shared(void);
+bool init_shared(unsigned int refill_count);
 
 void launch_panoramix(villager_t **villagers, druid_t *druid);
 #endif /* !PANORAMIX_HPP_ */
