@@ -41,4 +41,8 @@ typedef struct druid_s {
 void *village_thread(void *village_struct);
 void *druid_thread(void *druid_struct);
 
+villager_t **create_villagers(unsigned int count, unsigned int nb_fights,
+    pot_t *pot);
+pot_t *create_pot(void);
+druid_t *create_druid(unsigned int nb_refills, pot_t *pot);
 #endif /* !PANORAMIX_HPP_ */
