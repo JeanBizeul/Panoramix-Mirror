@@ -16,21 +16,26 @@
 #define VILLAGERS 10
 #define NB_FIGHTS 3
 
-int potions = POT_SIZE;
-int refills_left = REFILLS;
+extern int Refills_left;
 
-pthread_mutex_t pot_mutex;
-sem_t potions_sem;
-sem_t call_druid_sem;
+extern pthread_mutex_t Pot_mutex;
+extern pthread_mutex_t Refills_left_mutex;
+extern sem_t Potions_sem;
+extern sem_t Call_druid_sem;
+
+typedef struct pot_s {
+    unsigned int servings;
+} pot_t;
 
 typedef struct villager_s {
     unsigned int id;
     unsigned int nb_fights;
+    pot_t *pot;
 } villager_t;
 
 typedef struct druid_s {
-    unsigned int id;
     unsigned int nb_refills;
+    pot_t *pot;
 } druid_t;
 
 void *village_thread(void *village_struct);
