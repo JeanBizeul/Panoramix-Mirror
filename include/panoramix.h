@@ -11,10 +11,10 @@
     #include <semaphore.h>
     #include <stdbool.h>
 
-#define POT_SIZE 5
+#define POT_SIZE 3
 #define REFILLS 3
-#define VILLAGERS 10
-#define NB_FIGHTS 3
+#define VILLAGERS 1
+#define NB_FIGHTS 5
 
 extern int Refills_left;
 
@@ -35,6 +35,7 @@ typedef struct villager_s {
 
 typedef struct druid_s {
     unsigned int nb_refills;
+    sem_t Druid_ready_sem;
     pot_t *pot;
 } druid_t;
 
@@ -45,4 +46,10 @@ villager_t **create_villagers(unsigned int count, unsigned int nb_fights,
     pot_t *pot);
 pot_t *create_pot(void);
 druid_t *create_druid(unsigned int nb_refills, pot_t *pot);
+
+bool init_semaphores(void);
+bool init_mutexes(void);
+bool init_shared(void);
+
+void launch_panoramix(villager_t **villagers, druid_t *druid);
 #endif /* !PANORAMIX_HPP_ */
