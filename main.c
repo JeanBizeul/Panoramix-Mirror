@@ -17,7 +17,8 @@ const char Help_msg[] =
 
 static bool app(args_t args) 
 {
-    druid_t *druid = create_druid(args.nb_refills, args.nb_villagers);
+    druid_t *druid = create_druid(args.nb_refills, args.nb_villagers,
+        args.pot_size);
     villager_t **villagers = create_villagers(
         args.nb_villagers, args.nb_fights);
 

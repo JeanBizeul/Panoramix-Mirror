@@ -18,6 +18,11 @@ static void refill(druid_t *druid)
         " Beware I can only make %u more refills after this one.\n",
         Refills_left);
     pthread_mutex_unlock(&Refills_left_mutex);
+    pthread_mutex_unlock(&Servings_left_mutex);
+    pthread_mutex_lock(&Druid_called_mutex);
+    Druid_called = false;
+    pthread_mutex_unlock(&Druid_called_mutex);
+    pthread_cond_broadcast(&Pot_refilled_cond);
 }
 
 static bool can_refill(void)
@@ -47,7 +52,7 @@ void *druid_thread(void *druid_struct)
 
     printf("Druid: I'm ready... but sleepy...\n");
     Servings_left = druid->pot_size;
-    sem_post(&druid->Druid_ready_sem);
+    sem_post(&Druid_ready_sem);
     while (can_refill() && !all_villagers_sleeping(druid_struct)) {
         if (sem_trywait(&Call_druid_sem) == 0)
             refill(druid);
