@@ -32,6 +32,8 @@ static void fight(villager_t *villager)
 
 static bool wait_for_refill(villager_t *villager)
 {
+    bool no_more_refills = false;
+
     pthread_mutex_lock(&Druid_called_mutex);
     if (!Druid_called) {
         Druid_called = true;
@@ -42,25 +44,23 @@ static bool wait_for_refill(villager_t *villager)
         pthread_mutex_unlock(&Druid_called_mutex);
     }
     pthread_cond_wait(&Pot_refilled_cond, &Servings_left_mutex);
+    pthread_mutex_lock(&Refills_left_mutex);
+    no_more_refills = (Refills_left == 0);
+    pthread_mutex_unlock(&Refills_left_mutex);
+    if (Servings_left == 0 && no_more_refills) {
+        pthread_mutex_unlock(&Servings_left_mutex);
+        return false;
+    }
     return true;
 }
 
 static bool drink(villager_t *villager)
 {
-    bool no_more_refills = false;
-
     pthread_mutex_lock(&Servings_left_mutex);
     printf("Villager %u: I need a drink... I see %u servings left.\n",
         villager->id, Servings_left);
     if (Servings_left == 0) {
         if (!wait_for_refill(villager)) {
-            pthread_mutex_unlock(&Servings_left_mutex);
-            return false;
-        }
-        pthread_mutex_lock(&Refills_left_mutex);
-        no_more_refills = (Refills_left == 0);
-        pthread_mutex_unlock(&Refills_left_mutex);
-        if (Servings_left == 0 && no_more_refills) {
             pthread_mutex_unlock(&Servings_left_mutex);
             return false;
         }

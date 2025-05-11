@@ -11,11 +11,7 @@
 #include "panoramix.h"
 #include "parsing.h"
 
-const char Help_msg[] =
-    "USAGE: ./panoramix <nb_villagers> <pot_size>"
-    " <nb_fights> <nb_refills>\n";
-
-static bool app(args_t args) 
+static bool app(args_t args)
 {
     druid_t *druid = create_druid(args.nb_refills, args.nb_villagers,
         args.pot_size);
@@ -38,6 +34,9 @@ int main(int argc, char **argv)
 {
     args_t *parsed_args = parse_panoramix_args(argc, argv);
     bool ret = false;
+    const char Help_msg[] =
+        "USAGE: ./panoramix <nb_villagers> <pot_size>"
+        " <nb_fights> <nb_refills>\n";
 
     if (parsed_args == NULL) {
         fprintf(stderr, "Error: Wrong command line arguments.\n");
