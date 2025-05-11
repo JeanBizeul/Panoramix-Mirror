@@ -8,8 +8,7 @@
 #include <stdlib.h>
 #include "panoramix.h"
 
-villager_t **create_villagers(unsigned int count, unsigned int nb_fights,
-    pot_t *pot)
+villager_t **create_villagers(unsigned int count, unsigned int nb_fights)
 {
     villager_t **villagers_list = malloc(sizeof(villager_t) * count + 1);
 
@@ -23,32 +22,18 @@ villager_t **create_villagers(unsigned int count, unsigned int nb_fights,
         }
         villagers_list[i]->id = i;
         villagers_list[i]->nb_fights = nb_fights;
-        villagers_list[i]->pot = pot;
     }
     villagers_list[count] = NULL;
     return villagers_list;
 }
 
-pot_t *create_pot(unsigned int size)
-{
-    pot_t *pot = malloc(sizeof(pot_t));
-
-    if (pot == NULL)
-        return NULL;
-    pot->pot_size = size;
-    pot->servings = pot->pot_size;
-    return pot;
-}
-
-druid_t *create_druid(unsigned int nb_refills, unsigned int villagers_count,
-    pot_t *pot)
+druid_t *create_druid(unsigned int nb_refills, unsigned int villagers_count)
 {
     druid_t *druid = malloc(sizeof(druid_t));
 
     if (druid == NULL)
         return NULL;
     druid->nb_refills = nb_refills;
-    druid->pot = pot;
     druid->villager_count = villagers_count;
     if (sem_init(&druid->Druid_ready_sem, 0, 0) == -1) {
         free(druid);

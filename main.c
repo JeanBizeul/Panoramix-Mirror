@@ -17,12 +17,11 @@ const char Help_msg[] =
 
 static bool app(args_t args) 
 {
-    pot_t *pot = create_pot(args.pot_size);
-    druid_t *druid = create_druid(args.nb_refills, args.nb_villagers, pot);
+    druid_t *druid = create_druid(args.nb_refills, args.nb_villagers);
     villager_t **villagers = create_villagers(
-        args.nb_villagers, args.nb_fights, pot);
+        args.nb_villagers, args.nb_fights);
 
-    if (pot == NULL || druid == NULL || villagers == NULL) {
+    if (druid == NULL || villagers == NULL) {
         fprintf(stderr, "Error: Memory allocation failed.\n");
         return false;
     }
