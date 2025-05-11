@@ -47,24 +47,27 @@ static bool wait_for_refill(villager_t *villager)
 
 static bool drink(villager_t *villager)
 {
+    bool no_more_refills = false;
+
     pthread_mutex_lock(&Servings_left_mutex);
     printf("Villager %u: I need a drink... I see %u servings left.\n",
         villager->id, Servings_left);
     if (Servings_left == 0) {
-        pthread_mutex_unlock(&Servings_left_mutex);
-        if (!wait_for_refill(villager))
+        if (!wait_for_refill(villager)) {
+            pthread_mutex_unlock(&Servings_left_mutex);
             return false;
+        }
+        pthread_mutex_lock(&Refills_left_mutex);
+        no_more_refills = (Refills_left == 0);
+        pthread_mutex_unlock(&Refills_left_mutex);
+        if (Servings_left == 0 && no_more_refills) {
+            pthread_mutex_unlock(&Servings_left_mutex);
+            return false;
+        }
     }
     Servings_left--;
     pthread_mutex_unlock(&Servings_left_mutex);
     return true;
-}
-
-static bool should_stop(villager_t *villager)
-{
-    if (villager->nb_fights == 0)
-        return true;
-    return false;
 }
 
 void *village_thread(void *villager_struct)
@@ -73,13 +76,9 @@ void *village_thread(void *villager_struct)
 
     printf("Villager %u: Going into battle!\n", villager->id);
     while (villager->nb_fights > 0) {
-        if (should_stop(villager)) {
-            printf("Villager %u: I'm going to sleep now.\n", villager->id);
-            return NULL;
-        }
         if (!drink(villager)) {
             printf("Villager %u: I'm going to sleep now.\n", villager->id);
-            return NULL;
+            break;
         }
         fight(villager);
     }

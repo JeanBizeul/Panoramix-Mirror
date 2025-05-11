@@ -6,6 +6,7 @@
 */
 
 #include <stdio.h>
+#include <unistd.h>
 #include "panoramix.h"
 
 static void refill(druid_t *druid)
@@ -41,7 +42,8 @@ static bool all_villagers_sleeping(druid_t *druid)
     bool are_all_sleeping = false;
 
     pthread_mutex_lock(&Villagers_done_mutex);
-    are_all_sleeping = (Villagers_done == druid->villager_count);
+    are_all_sleeping =
+        (Villagers_done == druid->villager_count ? true : false);
     pthread_mutex_unlock(&Villagers_done_mutex);
     return are_all_sleeping;
 }
@@ -58,5 +60,9 @@ void *druid_thread(void *druid_struct)
             refill(druid);
     }
     printf("Druid: I'm out of viscum. I'm going back to... zZz\n");
+    while (!all_villagers_sleeping(druid_struct)) {
+        pthread_cond_broadcast(&Pot_refilled_cond);
+        usleep(100000);
+    }
     return NULL;
 }
