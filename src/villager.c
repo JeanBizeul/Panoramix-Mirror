@@ -40,7 +40,6 @@ static bool drink(villager_t *villager)
         }
     }
     villager->pot->servings--;
-    Refills_left--;
     pthread_mutex_unlock(&Refills_left_mutex);
     pthread_mutex_unlock(&Pot_mutex);
     return true;

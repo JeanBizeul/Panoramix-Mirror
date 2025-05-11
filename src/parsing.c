@@ -14,6 +14,8 @@ args_t *parse_panoramix_args(int argc, char **argv)
 {
     args_t *args = malloc(sizeof(args_t));
 
+    if (args == NULL)
+        return NULL;
     if (argc != 5) {
         free(args);
         return NULL;

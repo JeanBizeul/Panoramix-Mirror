@@ -6,22 +6,45 @@
 */
 
 #include <stdio.h>
-#include "panoramix.h"
+#include <stdlib.h>
 
-int main(void)
+#include "panoramix.h"
+#include "parsing.h"
+
+const char Help_msg[] =
+    "USAGE: ./panoramix <nb_villagers> <pot_size>"
+    " <nb_fights> <nb_refills>\n";
+
+static bool app(args_t args) 
 {
-    pot_t *pot = create_pot(3);
-    druid_t *druid = create_druid(3, 1, pot);
-    villager_t **villagers = create_villagers(1, 5, pot);
+    pot_t *pot = create_pot(args.pot_size);
+    druid_t *druid = create_druid(args.nb_refills, args.nb_villagers, pot);
+    villager_t **villagers = create_villagers(
+        args.nb_villagers, args.nb_fights, pot);
 
     if (pot == NULL || druid == NULL || villagers == NULL) {
         fprintf(stderr, "Error: Memory allocation failed.\n");
-        return 84;
+        return false;
     }
-    if (!init_shared(3)) {
+    if (!init_shared(args.nb_refills)) {
         fprintf(stderr, "Error: Initialization failed.\n");
-        return 84;
+        return false;
     }
     launch_panoramix(villagers, druid);
-    return 0;
+    return true;
+}
+
+int main(int argc, char **argv)
+{
+    args_t *parsed_args = parse_panoramix_args(argc, argv);
+    bool ret = false;
+
+    if (parsed_args == NULL) {
+        fprintf(stderr, "Error: Wrong command line arguments.\n");
+        fprintf(stderr, Help_msg);
+        return 84;
+    }
+    ret = app(*parsed_args);
+    free(parsed_args);
+    return (ret == true ? 0 : 84);
 }
