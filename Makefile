@@ -60,7 +60,8 @@ fclean:		clean
 re:		fclean all
 
 unit_tests: $(OBJS_TEST)
-	$(CC) -o $(TEST_OUTPUT) $(SRCS) $(OBJS_TEST) --coverage -lcriterion
+	$(CC) -o $(TEST_OUTPUT) $(SRCS) $(OBJS_TEST) \
+	--coverage -lcriterion -I $(INCLUDE_PATH)
 
 tests_run: unit_tests
 	./$(TEST_OUTPUT)
